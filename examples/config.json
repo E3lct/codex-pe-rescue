@@ -1,0 +1,9 @@
+{
+  "source_home": "E:\\RecoveredProfile\\.codex",
+  "target_home": "C:\\Users\\ExampleUser\\.codex",
+  "project_ids": ["replace-with-project-id-from-inspect"],
+  "thread_ids": [],
+  "path_map": {
+    "D:\\Projects\\sample": "E:\\Projects\\sample"
+  }
+}

@@ -1,0 +1,22 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "codex-pe-rescue"
+version = "0.1.0"
+description = "Recover selected local Codex history from a raw offline profile backup."
+requires-python = ">=3.11"
+license = "MIT"
+readme = "README.en.md"
+authors = [{name = "Codex PE Rescue contributors"}]
+dependencies = []
+
+[project.optional-dependencies]
+zstd = ["zstandard>=0.22,<1"]
+
+[project.scripts]
+codex-pe-rescue = "rescue:main"
+
+[tool.setuptools]
+py-modules = ["rescue"]

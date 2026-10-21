@@ -1,0 +1,16 @@
+.venv/
+__pycache__/
+*.py[cod]
+*.egg-info/
+dist/
+build/
+.codex/
+rescue-work*/
+*.sqlite*
+*.db*
+*.jsonl*
+*.rehome
+auth.json
+config.toml
+.env*
+!examples/config.json
