@@ -4,6 +4,16 @@
 
 Recover selected local Codex projects and chat history from a **raw offline `.codex` backup**, including files rescued with Windows PE after an unbootable system. No export package from the old system is required. Restore your actual project source files separately, then map old paths to their new locations.
 
+## Recommended: give this link to your assistant
+
+Ask an assistant with local file and command access to read this repository and follow its [recovery guide](skills/codex-pe-rescue/SKILL.md) and [workflow](skills/codex-pe-rescue/references/assistant-workflow.md). Installing a Skill or Git is optional. The assistant should obtain the included [helper](skills/codex-pe-rescue/scripts/assist.py), inspect the backup, select records and build the preview itself. It should ask only about unresolved backup locations, intended chats or old-to-new folder mappings, never require the user to write JSON or supply database IDs.
+
+The helper automatically obtains a pinned, hash-checked engine and isolated dependencies and generates a double-click launcher. Open the launcher, fully exit Codex, wait for `RECOVERY COMPLETE`, then reopen. The assistant can read the saved status. Python 3.11+ must be available; use the host's runtime if provided, otherwise arrange that prerequisite. A chat interface without local tools can only provide instructions. Setup downloads code/dependencies; it does not upload recovery data.
+
+The commands below remain available for manual use.
+
+The [guided flow design](docs/guided-recovery-flow.md) documents conditional questions, path confirmation and the future bundled Windows distribution. A standalone EXE is not released yet. Different user paths are runtime inputs, not reasons to modify or rebuild the code.
+
 **Experimental v0.1, Windows write adapter.** This is an independent tool for an internal, version-dependent storage format, not an official OpenAI import API. It requires native `projects`, `project_roots`, and `threads` tables in `state_5.sqlite`, `thread_history_1.sqlite`, and `sqlite/codex-dev.db`. Source and target schemas and migration records must match exactly. Older JSON-only project registries and schema conversion are unsupported.
 
 ## Quick start
@@ -64,7 +74,7 @@ New target changes block automatic rollback. A failed install may report `rolled
 - No ChatGPT cloud recovery, project-source copying, credential migration, plugin/skill installation, image/external attachment binary recovery, or database-version conversion.
 - Runtime recovery makes no network calls. Installation downloads dependencies. Workspaces, inspection output and backups contain private information.
 
-The included [Skill](skills/codex-pe-rescue/SKILL.md) guides another assistant through selection and the separate-terminal handoff. Install its folder manually if desired; it requires this engine installed or available in a checkout.
+The included [Skill](skills/codex-pe-rescue/SKILL.md) is also the instruction entrypoint for assistants given the repository URL. Its installation is optional; the helper automatically prepares the engine without a separate checkout.
 
 ## Tests and provenance
 

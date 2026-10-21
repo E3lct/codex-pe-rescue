@@ -2,7 +2,7 @@
 
 This tool writes local application records. Use a preserved offline backup and keep a separate copy before experimenting. Prepared workspaces and rollback backups contain private conversation data even when their file names look generic. Do not publish them.
 
-The runtime engine performs local file/database operations and does not call a network service. Installing Python dependencies is a separate network operation. Review source changes before running a version you do not trust. Hash manifests detect accidental changes to prepared data; they are not a signature or protection against an attacker controlling both manifest and payload.
+The core engine performs local file/database operations and does not call a network service. The assistant helper can download a pinned engine with SHA-256 verification and install dependencies into an isolated user-cache environment. It contacts GitHub and the configured package index, without uploading recovery data. Review source changes before running a version you do not trust. Hash manifests detect accidental changes to prepared data; they are not a signature or protection against an attacker controlling both manifest and payload.
 
 Account authentication/configuration is not imported. Process checks, target fingerprints and rollback guards are conservative safeguards, not isolation from arbitrary external writers. Stop on a partial-install report and preserve the evidence locally.
 
