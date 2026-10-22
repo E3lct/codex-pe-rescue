@@ -8,8 +8,8 @@ Use it after reinstalling Windows or relocating local Codex data. It prepares a 
 
 ## Safety and scope
 
-- Recovery data is processed locally and is not uploaded by the tool. Initial setup downloads a pinned engine from GitHub and installs dependencies from a Python package index. How an AI platform handles prompts and tool results depends on that platform.
-- Backups, inspection output, workspaces, and receipts may contain private chats or paths. Keep them outside the repository and do not publish them.
+- The recovery tool reads and writes backups locally and does not upload recovery data on its own. The first online setup downloads the recovery engine from GitHub and a library for reading compressed chat history from the Python package repository. These are software downloads; they do not send your backup. An AI assistant may see chat titles, project names, or paths returned by local inspection; how its service handles prompts and tool results depends on that platform.
+- Backups, inspection output, workspaces, and receipts may contain chat content, titles, or personal file paths. Keep them on your computer; do not upload them to a public repository or include them in an issue or pull request.
 - The tool does not restore ChatGPT cloud history, project source files, account credentials, old skills/plugins, or image/external attachment binaries. Images in recovered chats may remain unavailable.
 - **Experimental v0.1.0, Windows write adapter.** It depends on an unpublished, changing local data format. It is not an official OpenAI import tool and is not guaranteed to work with every version.
 - Source and destination schemas, migration records, and `user_version` must match. The tool stops when they do not. Older JSON-only project registries and database-version conversion are unsupported.
@@ -18,7 +18,7 @@ Use it after reinstalling Windows or relocating local Codex data. It prepares a 
 
 Give this repository link to an assistant that can access local files and run commands, and ask it to recover your old Codex projects or chats. The [repository AI guide](AGENTS.md) and [recovery Skill](skills/codex-pe-rescue/SKILL.md) point to the workflow; whether an AI automatically reads these files depends on its platform.
 
-The assistant inspects the backup and prepares a preview. It asks only when it cannot determine the backup location, chat selection, or old-to-new folder mapping. You do not need to enter database IDs or write JSON. Before installation, fully exit Codex and use the generated standalone launcher; then reopen Codex and verify the sidebar and chats.
+The work is split between the assistant and the local recovery tool: the assistant uses local file access to inspect the backup folder you specify and its project/chat list. It does not rely on an AI search index or scan the whole disk by default. After the assistant helps select records, the local tool reads them, unpacks compressed chat history, and prepares a preview. After you review the preview and start recovery, the tool waits for Codex to close before merging records into the new profile. It does not move project source files; restore those separately. The assistant asks only when it cannot determine the backup location, chat selection, or old-to-new folder mapping. You do not need to enter database IDs or write JSON.
 
 Python 3.11+ must be available. A regular web chat without local file access can only provide instructions. See the [assistant workflow](skills/codex-pe-rescue/references/assistant-workflow.md). Installing the Skill is optional.
 

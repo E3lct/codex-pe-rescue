@@ -29,7 +29,7 @@ Target must be an initialized Codex installation with compatible native project/
 
 Use `--thread-id` for a single chat. Repeat options for multiple entries. `--target-home` overrides `CODEX_HOME` / current user's `.codex`. `--workspace` overrides the private auto-created location. Unchanged roots still need identity mappings. Actual project source directories must already exist.
 
-Preparation creates an isolated user-cache Python environment and installs `zstandard` there. It does not change global Python, PATH, registry or services. Setup contacts the pinned GitHub source and the configured Python package index; recovery data is not uploaded. `--offline` before the subcommand requires cached components and performs no installation/download. `setup` can pre-cache explicitly.
+Preparation creates an isolated user-cache Python environment and installs `zstandard` there to read compressed chat history. It does not change global Python, PATH, registry or services. The helper downloads the pinned recovery engine from GitHub and the library from the configured Python package repository; these are software downloads, and the helper does not upload recovery data. Local inspection may return private titles or paths to the assistant, which the AI platform handles under its own policies. `--offline` before the subcommand requires cached components and performs no installation/download. `setup` can pre-cache explicitly.
 
 Read the returned report and plan yourself. Present the selection, mapped roots, existing-history preservation and attachment limitation in plain language. Ask for approval only when required by the user's rules, after the concrete preview exists. Keep configs, previews and logs out of the public checkout.
 

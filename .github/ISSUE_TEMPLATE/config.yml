@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: 手动恢复指南 / Manual recovery guide
+    url: https://github.com/E3lct/codex-pe-rescue/blob/main/docs/manual-recovery.md
+    about: 查看恢复步骤和前置条件 / Read the recovery steps and prerequisites.
+  - name: 安全说明 / Security policy
+    url: https://github.com/E3lct/codex-pe-rescue/blob/main/SECURITY.md
+    about: 查看数据安全规则；本项目没有私密漏洞报告渠道 / Read the data-safety rules; no private vulnerability-reporting channel is available.

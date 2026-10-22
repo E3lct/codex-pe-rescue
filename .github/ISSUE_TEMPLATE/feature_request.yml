@@ -1,0 +1,37 @@
+name: Feature request / 功能建议
+description: Suggest an improvement safely / 安全地提出改进建议
+title: "[Feature]: "
+body:
+  - type: markdown
+    attributes:
+      value: >-
+        Keep the request general. Do not include real `.codex` data, chat content,
+        credentials, private paths, recovery configs, receipts, or personal identifiers.
+
+        请概括说明需求。不要包含真实 `.codex` 数据、聊天内容、凭据、个人路径、恢复配置、回执或身份信息。
+  - type: checkboxes
+    id: privacy
+    attributes:
+      label: Privacy check / 隐私确认
+      options:
+        - label: I confirm this request contains no private data. / 我确认建议中不含私人数据。
+          required: true
+  - type: textarea
+    id: problem
+    attributes:
+      label: What problem would this solve? / 想解决什么问题？
+      description: Describe the need without including private profile information. / 描述需求，不要包含私人配置数据。
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: What would you like to happen? / 希望如何改进？
+    validations:
+      required: true
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives considered / 考虑过的替代方案
+    validations:
+      required: false

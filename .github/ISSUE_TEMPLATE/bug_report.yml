@@ -1,0 +1,67 @@
+name: Bug report / 问题报告
+description: Report a reproducible problem with safe details / 使用脱敏信息报告可复现的问题
+title: "[Bug]: "
+body:
+  - type: markdown
+    attributes:
+      value: >-
+        Public issues are visible to everyone. Never attach a real `.codex` backup,
+        database, chat export, credentials, recovery config, receipt, or log containing
+        private paths or IDs. This project has no private vulnerability-reporting channel.
+
+        公开 Issue 对所有人可见。请勿附上真实 `.codex` 备份、数据库、聊天导出、账号凭据、恢复配置、回执，或包含个人路径和 ID 的日志。本项目没有私密漏洞报告渠道。
+  - type: checkboxes
+    id: privacy
+    attributes:
+      label: Privacy check / 隐私确认
+      options:
+        - label: I confirm this report contains no private data. / 我确认报告不含私人数据。
+          required: true
+  - type: input
+    id: version
+    attributes:
+      label: Tool version or commit / 工具版本或提交号
+      description: For example, v0.1.0 or a short commit hash / 例如 v0.1.0 或简短提交号。
+      placeholder: v0.1.0
+    validations:
+      required: true
+  - type: dropdown
+    id: windows
+    attributes:
+      label: Windows version / Windows 版本
+      options:
+        - Windows 11
+        - Windows 10
+        - Other or unsure / 其他或不确定
+    validations:
+      required: true
+  - type: textarea
+    id: problem
+    attributes:
+      label: What happened? / 出现了什么问题？
+      description: Describe the problem. Replace personal paths with fictional paths such as C:\Example. / 描述问题；请将个人路径替换为 C:\Example 这样的虚构路径。
+    validations:
+      required: true
+  - type: textarea
+    id: reproduce
+    attributes:
+      label: Steps to reproduce / 复现步骤
+      description: Use a small synthetic example. Do not include real profile data. / 使用小型合成示例，不要包含真实配置数据。
+      placeholder: |
+        1. Run ... with synthetic data
+        2. Observe ...
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected behavior / 预期结果
+    validations:
+      required: true
+  - type: textarea
+    id: error
+    attributes:
+      label: Sanitized error message / 脱敏后的错误信息
+      description: Paste only relevant error text after removing private paths, IDs, and chat content. Do not upload logs or receipts. / 只粘贴已删除个人路径、ID 和聊天内容的相关错误文字；不要上传日志或回执。
+    validations:
+      required: false
