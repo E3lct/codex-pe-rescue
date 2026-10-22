@@ -1,4 +1,4 @@
-include AGENTS.md LICENSE README.md README.en.md PROVENANCE.md CONTRIBUTING.md SECURITY.md
+include AGENTS.md LICENSE README.md README.en.md PROVENANCE.md CONTRIBUTING.md SECURITY.md requirements-ci.txt
 recursive-include docs *.md
 recursive-include examples *.json
 recursive-include skills *.md *.py
