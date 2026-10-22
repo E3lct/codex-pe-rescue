@@ -29,7 +29,8 @@
 ## 开发与帮助
 
 - [恢复原理与失败状态](docs/recovery-model.md) · [引导流程设计](docs/guided-recovery-flow.md)
+- [Windows 便携构建与验证状态](docs/portable-build.md)
 - [贡献指南](CONTRIBUTING.md) · [安全说明](SECURITY.md) · [来源与依赖](PROVENANCE.md) · [MIT 许可证](LICENSE)
 - 合成测试命令和手动恢复细节见[手动恢复指南](docs/manual-recovery.md)。报告问题时只提供脱敏描述或合成示例，不要附真实备份、聊天、数据库、凭据或私人路径。
 
-当前源码需要 Python 3.11+，正式写入命令仅支持 Windows。仓库尚未发布自带 Python 运行环境的便携版。实际项目路径是每次恢复时提供的输入，无需针对不同路径改代码或重新编译。
+源码和 Skill 方式需要 Python 3.11+，正式写入命令仅支持 Windows。仓库已有 Windows x64 便携版的本地构建候选，但尚未发布正式下载；它未经代码签名，也仍需干净 Windows 验证。实际项目路径是每次恢复时提供的输入，无需针对不同路径改代码或重新编译。

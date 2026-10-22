@@ -29,7 +29,8 @@ If you prefer to run the commands yourself, follow the [manual recovery guide](d
 ## Development and help
 
 - [Recovery model and failure states](docs/recovery-model.md) · [Guided workflow design](docs/guided-recovery-flow.md)
+- [Windows portable build and validation status](docs/portable-build.en.md)
 - [Contributing](CONTRIBUTING.md) · [Security](SECURITY.md) · [Provenance and dependencies](PROVENANCE.md) · [MIT License](LICENSE)
 - Synthetic test commands and manual operations are in the [manual recovery guide](docs/manual-recovery.en.md). For reports, share only sanitized descriptions or synthetic examples. Do not attach real backups, chats, databases, credentials, or private paths.
 
-The current source requires Python 3.11+; modifying commands run only on Windows. A portable build with its own Python runtime has not been released. Project paths are runtime inputs, so different paths do not require code changes or a rebuild.
+The source and Skill workflows require Python 3.11+; modifying commands run only on Windows. A local Windows x64 portable build candidate is available, but no official download has been published. It is unsigned and still needs clean-Windows validation. Project paths are runtime inputs, so different paths do not require code changes or a rebuild.

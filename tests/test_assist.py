@@ -145,6 +145,47 @@ class AssistantTests(unittest.TestCase):
                 assist.engine_file(self.cache, offline=True)
             network.assert_not_called()
 
+    def test_portable_engine_and_runtime_use_bundled_files(self):
+        bundle = self.case.root / "bundle"
+        bundle.mkdir()
+        engine = bundle / "rescue.py"
+        engine.write_text("# synthetic bundled engine\n", encoding="utf-8")
+        with mock.patch.object(sys, "frozen", True, create=True), \
+                mock.patch.object(sys, "_MEIPASS", str(bundle), create=True):
+            self.assertEqual(assist.engine_file(self.cache, offline=True), engine)
+            self.assertEqual(assist.runtime(self.cache, offline=True), Path(sys.executable).resolve())
+        self.assertFalse(self.cache.exists())
+
+    def test_portable_prepare_copies_the_executable_for_independent_handoff(self):
+        bundle = self.case.root / "bundle"
+        bundle.mkdir()
+        engine = bundle / "rescue.py"
+        engine.write_text("# synthetic bundled engine\n", encoding="utf-8")
+        executable = self.case.root / "Codex PE Rescue.exe"
+        executable.write_bytes(b"synthetic executable")
+        report = {"selected_threads": 1, "selected_projects": 1}
+
+        def engine_result(python, engine, arguments):
+            if arguments[0] == "prepare":
+                self.case.workspace.mkdir()
+                return report
+            return {"verified": True}
+
+        with mock.patch.object(sys, "frozen", True, create=True), \
+                mock.patch.object(sys, "_MEIPASS", str(bundle), create=True), \
+                mock.patch.object(sys, "executable", str(executable)), \
+                mock.patch.object(assist, "run_engine", side_effect=engine_result):
+            result = assist.prepare_recovery(
+                self.case.source, self.case.target, ["source-project"], [],
+                [(fixtures.OLD_ROOT, str(self.case.project))], self.case.workspace,
+                executable, engine, self.cache)
+        self.assertEqual((self.case.workspace / "run-recovery.exe").read_bytes(), executable.read_bytes())
+        handoff = assist.read(self.case.workspace / "handoff.json")
+        self.assertTrue(handoff["portable"])
+        launcher = Path(result["launcher"]).read_text(encoding="utf-8")
+        self.assertIn('run-recovery.exe" wait --workspace', launcher)
+        self.assertNotIn("python.exe", launcher.lower())
+
     def test_subprocess_inspection_filters_synthetic_titles(self):
         process = subprocess.run([sys.executable, str(HELPER), "--cache", str(self.cache), "inspect",
                                   "--source-home", str(self.case.source), "--query", "lesson"],

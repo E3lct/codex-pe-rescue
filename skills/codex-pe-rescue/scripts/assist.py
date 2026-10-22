@@ -46,6 +46,12 @@ def read(path):
 
 
 def engine_file(cache, offline=False):
+    # A portable build carries the reviewed engine in its temporary bundle.
+    if getattr(sys, "frozen", False):
+        bundled = Path(sys._MEIPASS) / "rescue.py"
+        if not bundled.is_file():
+            raise RuntimeError("Portable bundle is missing its recovery engine")
+        return bundled
     # A copied Skill works without Git or a separate repository checkout.
     parents = Path(__file__).resolve().parents
     checkout = parents[3] / "rescue.py" if len(parents) > 3 else None
@@ -71,6 +77,9 @@ def engine_file(cache, offline=False):
 
 
 def runtime(cache, offline=False):
+    if getattr(sys, "frozen", False):
+        # The portable executable contains its own interpreter and dependencies.
+        return Path(sys.executable).resolve()
     environment = Path(cache) / "python-env"
     python = environment / ("Scripts/python.exe" if sys.platform == "win32" else "bin/python")
     if not python.is_file():
@@ -88,7 +97,10 @@ def runtime(cache, offline=False):
 
 
 def run_engine(python, engine, arguments):
-    result = subprocess.run([str(python), str(engine), *map(str, arguments)],
+    command = ([str(python), "--_engine", *map(str, arguments)]
+               if getattr(sys, "frozen", False)
+               else [str(python), str(engine), *map(str, arguments)])
+    result = subprocess.run(command,
                             capture_output=True, text=True, encoding="utf-8",
                             env=dict(os.environ, PYTHONUTF8="1"))
     if result.returncode:
@@ -108,7 +120,9 @@ def prepare_recovery(source, target, project_ids, thread_ids, mappings, workspac
     workspace, cache = [Path(p).expanduser().resolve() for p in (workspace, cache)]
     if workspace.exists():
         raise RuntimeError("Choose a new workspace; existing work is not overwritten")
-    for value in (python, workspace / "run-recovery.py", workspace):
+    frozen = getattr(sys, "frozen", False)
+    helper = workspace / ("run-recovery.exe" if frozen else "run-recovery.py")
+    for value in (python, helper, workspace):
         batch_arg(value)
     config = {"source_home": str(Path(source).expanduser().resolve()),
               "target_home": str(Path(target).expanduser().resolve()),
@@ -125,12 +139,17 @@ def prepare_recovery(source, target, project_ids, thread_ids, mappings, workspac
     save(config_file, config)
     report = run_engine(python, frozen_engine, ["prepare", "--config", config_file, "--workspace", workspace])
     run_engine(python, frozen_engine, ["verify", "--workspace", workspace])
-    helper = workspace / "run-recovery.py"
-    shutil.copy2(__file__, helper)
+    if frozen:
+        shutil.copy2(sys.executable, helper)
+    else:
+        shutil.copy2(__file__, helper)
     save(workspace / "handoff.json", {"workspace": str(workspace), "python": str(python),
+                                      "portable": frozen,
                                       "engine": str(frozen_engine), "engine_sha256": sha256(frozen_engine)})
     launcher = workspace / "Start-Recovery.cmd"
-    command = " ".join([batch_arg(python), batch_arg(helper), "wait", "--workspace", batch_arg(workspace)])
+    command = ([batch_arg(helper), "wait", "--workspace", batch_arg(workspace)] if frozen else
+               [batch_arg(python), batch_arg(helper), "wait", "--workspace", batch_arg(workspace)])
+    command = " ".join(command)
     launcher.write_text("@echo off\r\nchcp 65001 >nul\r\nsetlocal DisableDelayedExpansion\r\n" + command +
                         "\r\nset rescue_exit=%errorlevel%\r\necho.\r\npause\r\nexit /b %rescue_exit%\r\n",
                         encoding="utf-8", newline="")
@@ -215,7 +234,7 @@ def main(argv=None):
     parser.add_argument("--cache", type=Path, default=cache_home())
     parser.add_argument("--offline", action="store_true")
     commands = parser.add_subparsers(dest="command", required=True)
-    commands.add_parser("setup", help="Automatically prepare engine and isolated dependencies")
+    commands.add_parser("setup", help="Check a bundled runtime or prepare the engine and isolated dependencies")
     inspect = commands.add_parser("inspect", help="List projects/chats; optionally filter titles and paths")
     inspect.add_argument("--source-home", required=True, type=Path)
     inspect.add_argument("--query", default="")
@@ -258,7 +277,10 @@ def main(argv=None):
             else:
                 python = runtime(args.cache, args.offline)
                 if args.command == "setup":
-                    result = {"ready": True, "engine": str(engine), "python": str(python), "cache": str(args.cache)}
+                    result = ({"ready": True, "engine": "bundled", "runtime": "bundled",
+                               "cache": str(args.cache)} if getattr(sys, "frozen", False) else
+                              {"ready": True, "engine": str(engine), "python": str(python),
+                               "cache": str(args.cache)})
                 else:
                     workspace = args.workspace or args.cache / "runs" / uuid.uuid4().hex[:8]
                     result = prepare_recovery(args.source_home, args.target_home, args.project_id,
