@@ -1,87 +1,35 @@
 # Codex PE Rescue
 
-[中文说明](README.md)
+[中文](README.md) · [License](LICENSE) · [Contributing](CONTRIBUTING.md) · [Security](SECURITY.md)
 
-Recover selected local Codex projects and chat history from a **raw offline `.codex` backup**, including files rescued with Windows PE after an unbootable system. No export package from the old system is required. Restore your actual project source files separately, then map old paths to their new locations.
+Can your old Windows system no longer boot, leaving only a raw `.codex` backup copied with recovery media? This tool helps select local Codex projects and chats from that backup, merge them into a new installation, and map old project paths to their new locations. Project source files must be backed up and restored separately.
 
-## Recommended: give this link to your assistant
+Use it after reinstalling Windows or relocating local Codex data. It prepares a merge preview before writing a backed-up recovery while the client is closed. The old system does not need to export a migration package first.
 
-Ask an assistant with local file and command access to read this repository and follow its [recovery guide](skills/codex-pe-rescue/SKILL.md) and [workflow](skills/codex-pe-rescue/references/assistant-workflow.md). Installing a Skill or Git is optional. The assistant should obtain the included [helper](skills/codex-pe-rescue/scripts/assist.py), inspect the backup, select records and build the preview itself. It should ask only about unresolved backup locations, intended chats or old-to-new folder mappings, never require the user to write JSON or supply database IDs.
+## Safety and scope
 
-The helper automatically obtains a pinned, hash-checked engine and isolated dependencies and generates a double-click launcher. Open the launcher, fully exit Codex, wait for `RECOVERY COMPLETE`, then reopen. The assistant can read the saved status. Python 3.11+ must be available; use the host's runtime if provided, otherwise arrange that prerequisite. A chat interface without local tools can only provide instructions. Setup downloads code/dependencies; it does not upload recovery data.
+- Recovery data is processed locally and is not uploaded by the tool. Initial setup downloads a pinned engine from GitHub and installs dependencies from a Python package index. How an AI platform handles prompts and tool results depends on that platform.
+- Backups, inspection output, workspaces, and receipts may contain private chats or paths. Keep them outside the repository and do not publish them.
+- The tool does not restore ChatGPT cloud history, project source files, account credentials, old skills/plugins, or image/external attachment binaries. Images in recovered chats may remain unavailable.
+- **Experimental v0.1.0, Windows write adapter.** It depends on an unpublished, changing local data format. It is not an official OpenAI import tool and is not guaranteed to work with every version.
+- Source and destination schemas, migration records, and `user_version` must match. The tool stops when they do not. Older JSON-only project registries and database-version conversion are unsupported.
 
-The commands below remain available for manual use.
+## Quick start: AI-guided recovery
 
-The [guided flow design](docs/guided-recovery-flow.md) documents conditional questions, path confirmation and the future bundled Windows distribution. A standalone EXE is not released yet. Different user paths are runtime inputs, not reasons to modify or rebuild the code.
+Give this repository link to an assistant that can access local files and run commands, and ask it to recover your old Codex projects or chats. The [repository AI guide](AGENTS.md) and [recovery Skill](skills/codex-pe-rescue/SKILL.md) point to the workflow; whether an AI automatically reads these files depends on its platform.
 
-**Experimental v0.1, Windows write adapter.** This is an independent tool for an internal, version-dependent storage format, not an official OpenAI import API. It requires native `projects`, `project_roots`, and `threads` tables in `state_5.sqlite`, `thread_history_1.sqlite`, and `sqlite/codex-dev.db`. Source and target schemas and migration records must match exactly. Older JSON-only project registries and schema conversion are unsupported.
+The assistant inspects the backup and prepares a preview. It asks only when it cannot determine the backup location, chat selection, or old-to-new folder mapping. You do not need to enter database IDs or write JSON. Before installation, fully exit Codex and use the generated standalone launcher; then reopen Codex and verify the sidebar and chats.
 
-## Quick start
+Python 3.11+ must be available. A regular web chat without local file access can only provide instructions. See the [assistant workflow](skills/codex-pe-rescue/references/assistant-workflow.md). Installing the Skill is optional.
 
-Use an independent PowerShell in this repository. All paths and identifiers below are fictional examples. Keep recovery workspaces and configuration outside the public repository.
+## Manual recovery
 
-```powershell
-py -3 -m venv .venv
-.\.venv\Scripts\python.exe -m pip install ".[zstd]"
-.\.venv\Scripts\codex-pe-rescue.exe inspect --source-home 'E:\RecoveredProfile\.codex'
-```
+If you prefer to run the commands yourself, follow the [manual recovery guide](docs/manual-recovery.en.md). The full sequence is: inspect the backup, select projects or chats, map paths, review the preview, exit the client before applying, and verify the result.
 
-Requires Python 3.11+. Choose the projects/threads identified by inspection and edit a private copy of [examples/config.json](examples/config.json):
+## Development and help
 
-```json
-{
-  "source_home": "E:\\RecoveredProfile\\.codex",
-  "target_home": "C:\\Users\\ExampleUser\\.codex",
-  "project_ids": ["replace-with-project-id-from-inspect"],
-  "thread_ids": [],
-  "path_map": {"D:\\Projects\\sample": "E:\\Projects\\sample"}
-}
-```
+- [Recovery model and failure states](docs/recovery-model.md) · [Guided workflow design](docs/guided-recovery-flow.md)
+- [Contributing](CONTRIBUTING.md) · [Security](SECURITY.md) · [Provenance and dependencies](PROVENANCE.md) · [MIT License](LICENSE)
+- Synthetic test commands and manual operations are in the [manual recovery guide](docs/manual-recovery.en.md). For reports, share only sanitized descriptions or synthetic examples. Do not attach real backups, chats, databases, credentials, or private paths.
 
-Select at least one project or thread. Supply mappings for all selected roots and working directories, including identity mappings for unchanged locations. Longest matching prefixes win. Actual destination project directories must already exist. Initialize the new Codex installation normally first; do not copy old credentials to sign in.
-
-```powershell
-.\.venv\Scripts\codex-pe-rescue.exe prepare --config 'E:\recovery-config.json' --workspace 'E:\rescue-work-01'
-.\.venv\Scripts\codex-pe-rescue.exe verify --workspace 'E:\rescue-work-01'
-```
-
-Review `preview.json` and `plan.json` in the new workspace. Preparation does not install records. The frozen inputs and engine are hashed; recreate the workspace after changing either.
-
-Keep the independent terminal open, fully exit Codex/ChatGPT desktop, CLI, and IDE backends, then:
-
-```powershell
-.\.venv\Scripts\codex-pe-rescue.exe apply --workspace 'E:\rescue-work-01' --yes --codex-stopped
-```
-
-The tool checks relevant process names/PIDs and refuses live writes. It never terminates processes. It rebuilds the merge using the latest target data, preserves existing threads and authentication/configuration files, and rejects duplicate thread IDs or conflicting session files. Wait for `state: complete`, retain the returned receipt, then reopen the client.
-
-Backups are stored under the target `.codex\pe-rescue-backups`. To undo a completed recovery while the client is still closed and the destination is unchanged:
-
-```powershell
-.\.venv\Scripts\codex-pe-rescue.exe rollback --receipt '<returned receipt path>' --yes --codex-stopped
-```
-
-New target changes block automatic rollback. A failed install may report `rolled_back` or `rollback_incomplete`; the latter requires manual review. Do not reopen a partially restored profile or retry blindly. Preserve the source, workspace, receipt and backup.
-
-## Scope and limits
-
-- Captures original databases and sidecars before opening SQLite, without opening the original backup through SQLite.
-- Handles plain/Zstandard session segments, dependent history bases and byte-offset recalculation. Preserves message body bytes; rewrites structured working-directory/runtime metadata only.
-- Reuses matching destination projects or imports selected project records. Does not merge divergent histories with the same ID.
-- Snapshots incorporate WAL; archived WAL is diagnostic only and is never reattached to standalone snapshots.
-- Copies across volumes, verifies hashes, and replaces within the destination directory. A multi-file install is **not** power-loss atomic.
-- Windows modifying commands only. Managed paths must be shorter than 240 characters; linked managed paths are rejected.
-- No ChatGPT cloud recovery, project-source copying, credential migration, plugin/skill installation, image/external attachment binary recovery, or database-version conversion.
-- Runtime recovery makes no network calls. Installation downloads dependencies. Workspaces, inspection output and backups contain private information.
-
-The included [Skill](skills/codex-pe-rescue/SKILL.md) is also the instruction entrypoint for assistants given the repository URL. Its installation is optional; the helper automatically prepares the engine without a separate checkout.
-
-## Tests and provenance
-
-```powershell
-.\.venv\Scripts\python.exe -m unittest discover -s tests -v
-```
-
-Tests use synthetic databases and sessions, including compressed records, WAL capture, interrupted installation, rollback, tampering and compatibility checks. They do not establish compatibility with every live Codex release. This public engine is a generic rewrite of a one-off recovery approach; no user profile or private incident artifacts are shipped.
-
-Read the [recovery model](docs/recovery-model.md), [provenance](PROVENANCE.md), [contribution guide](CONTRIBUTING.md) and [security guidance](SECURITY.md). Source code is [MIT licensed](LICENSE). User data is not licensed for publication. Not affiliated with OpenAI or other recovery-tool authors.
+The current source requires Python 3.11+; modifying commands run only on Windows. A portable build with its own Python runtime has not been released. Project paths are runtime inputs, so different paths do not require code changes or a rebuild.

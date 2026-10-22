@@ -5,7 +5,7 @@ description: Recover selected local Codex projects and chats from a raw offline 
 
 # Recover local Codex history with minimal user work
 
-This is also the entrypoint for an assistant given the repository URL and asked to recover history. Skill installation is optional. Read [references/assistant-workflow.md](references/assistant-workflow.md) for commands and handoff details. If browsing the repository rather than using an installed Skill, read and download `scripts/assist.py` into a private local tool directory yourself. Do not ask the user to install this Skill or download a second project.
+This is also the entrypoint for an assistant given the repository URL and asked to recover history. Skill installation is optional. For a repository-link request, the concise entrypoints are the [README](../../README.md) and [AI guide](../../AGENTS.md); this Skill remains the full recovery workflow. Read [references/assistant-workflow.md](references/assistant-workflow.md) for commands and handoff details. If browsing the repository rather than using an installed Skill, read and download `scripts/assist.py` into a private local tool directory yourself. Do not ask the user to install this Skill or download a second project.
 
 Own the preparation work. The user should describe the backup and intended chats, not find internal IDs, write JSON, install Git or edit SQL. The helper finds a nearby engine or downloads a fixed GitHub commit and verifies its SHA-256. It prepares dependencies in an isolated user cache. Use Python 3.11+ already available locally or supplied by the host (discover the workspace runtime when a tool exists). If none is available, explain that single prerequisite and follow the user's software-installation rules; do not claim Python is bundled.
 
